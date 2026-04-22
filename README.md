@@ -92,15 +92,29 @@ npx prisma generate
 
 Esse comando gera o client usado no `app.js`.
 
-### 5) Rodar servidor
+### 5) Rodar servidor em desenvolvimento (watch)
 
 ```bash
-node app.js
+node --watch app.js
 ```
 
 Servidor sobe em:
 
 - `http://localhost:3000`
+
+Se quiser rodar sem watch:
+
+```bash
+node app.js
+```
+
+### 6) Abrir Prisma Studio (opcional)
+
+Rode a partir da pasta `backend`:
+
+```bash
+npx prisma studio
+```
 
 ## Como testar a API
 
@@ -154,8 +168,9 @@ Observacao: para desenvolvimento local, rode backend e frontend em terminais sep
 1. Suba MongoDB (local ou Atlas)
 2. Configure `DATABASE_URL` no `.env`
 3. Rode `npx prisma generate`
-4. Rode backend com `node app.js`
+4. Rode backend com `node --watch app.js`
 5. Rode frontend com `npm run dev` (quando implementado)
+6. Opcional: abra o Prisma Studio com `npx prisma studio`
 
 ## Problemas comuns
 
