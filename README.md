@@ -1,68 +1,26 @@
 # test_web
 
-Projeto fullstack em construcao com:
+Projeto fullstack com:
 
 - Backend: Node.js + Express + Prisma
 - Banco: MongoDB
-- Frontend: pasta criada, ainda sem implementacao
+- Frontend: React + Vite + Axios
 
-## Visao geral da implementacao (ate esta etapa)
+## O que existe hoje
 
-O backend expoe uma API HTTP simples para cadastro e listagem de usuarios.
+O projeto ja tem uma API funcionando e um frontend consumindo essa API.
+
+### Backend
+
+Rotas disponiveis:
 
 - `GET /` retorna `welcome`
-- `POST /user` cria usuario no MongoDB via Prisma
-- `GET /users` lista usuarios do MongoDB via Prisma
+- `POST /user` cria um usuario
+- `PUT /user` atualiza um usuario pelo `email`
+- `DELETE /user` remove um usuario pelo `email`
+- `GET /users` lista todos os usuarios
 
-A API usa:
-
-- `cors` para permitir chamadas do frontend
-- `express.json()` para receber JSON no body
-- `@prisma/client` para acessar o banco
-
-Modelo atual no Prisma:
-
-- `User`
-- Campos: `id` (ObjectId), `email` (unico), `name`
-
-## Estrutura atual
-
-```text
-test_web/
-	README.md
-	backend/
-		app.js
-		package.json
-		prisma.config.ts
-		.gitignore
-		prisma/
-			schema.prisma
-	frontend/
-```
-
-## Requisitos
-
-Instale antes de rodar o projeto:
-
-1. Node.js 18+
-2. npm (normalmente vem com Node.js)
-3. MongoDB local OU string de conexao MongoDB Atlas
-
-## Setup do zero
-
-### 1) Entrar no backend
-
-```bash
-cd backend
-```
-
-### 2) Instalar dependencias
-
-```bash
-npm install
-```
-
-Dependencias importantes do backend:
+Tecnologias usadas no backend:
 
 - `express`
 - `cors`
@@ -70,111 +28,203 @@ Dependencias importantes do backend:
 - `prisma`
 - `dotenv`
 
-### 3) Criar arquivo de ambiente
+### Frontend
 
-Crie `backend/.env` com:
+O frontend usa:
+
+- React
+- Vite
+- `axios` para consumir a API
+
+A tela principal faz:
+
+- carregar os usuarios ao abrir a pagina
+- criar usuario
+- editar usuario
+- deletar usuario
+
+## Estrutura atual
+
+```text
+test_web/
+  README.md
+  backend/
+    app.js
+    package.json
+    prisma.config.ts
+    .gitignore
+    prisma/
+      schema.prisma
+  frontend/
+    src/
+      index.css
+      main.jsx
+      assets/
+      pages/
+        Home/
+          index.jsx
+          style.css
+      services/
+        api.js
+```
+
+## Requisitos
+
+Antes de rodar o projeto, instale:
+
+1. Node.js 18+
+2. npm
+3. MongoDB local ou MongoDB Atlas
+
+## Como instalar do zero
+
+### 1) Backend
+
+Entre na pasta do backend e instale as dependencias:
+
+```bash
+cd backend
+npm install
+```
+
+Dependencias principais:
+
+- `express`
+- `cors`
+- `@prisma/client`
+- `prisma`
+- `dotenv`
+
+Crie o arquivo `backend/.env` com a URL do banco:
 
 ```env
 DATABASE_URL="mongodb+srv://USUARIO:SENHA@SEU_CLUSTER/NOME_DO_BANCO?retryWrites=true&w=majority"
 ```
 
-Se usar Mongo local, exemplo:
+Exemplo local:
 
 ```env
 DATABASE_URL="mongodb://localhost:27017/test_web"
 ```
 
-### 4) Gerar Prisma Client
+Gere o Prisma Client:
 
 ```bash
 npx prisma generate
 ```
 
-Esse comando gera o client usado no `app.js`.
-
-### 5) Rodar servidor em desenvolvimento (watch)
+Suba o backend em modo desenvolvimento:
 
 ```bash
 node --watch app.js
 ```
 
-Servidor sobe em:
-
-- `http://localhost:3000`
-
-Se quiser rodar sem watch:
+Se preferir, rode sem watch:
 
 ```bash
 node app.js
 ```
 
-### 6) Abrir Prisma Studio (opcional)
-
-Rode a partir da pasta `backend`:
+Abra o Prisma Studio quando quiser visualizar os dados:
 
 ```bash
 npx prisma studio
 ```
 
-## Como testar a API
+### 2) Frontend
 
-### Health check
+Entre na pasta do frontend e instale as dependencias:
+
+```bash
+cd ../frontend
+npm install
+```
+
+Dependencias principais do frontend:
+
+- `react`
+- `react-dom`
+- `vite`
+- `axios`
+
+Suba o frontend:
+
+```bash
+npm run dev
+```
+
+## Como funciona a implementacao
+
+### Prisma
+
+O schema atual possui um modelo `User` com:
+
+- `id` como `ObjectId`
+- `email` unico
+- `name`
+
+O arquivo de configuracao `backend/prisma.config.ts` usa a variavel `DATABASE_URL` para conectar no banco.
+
+### Backend
+
+O backend cria uma instancia de `PrismaClient` e usa a collection de usuarios via Prisma:
+
+- `prisma.user.create(...)`
+- `prisma.user.findMany(...)`
+- `prisma.user.update(...)`
+- `prisma.user.delete(...)`
+
+### Frontend
+
+O arquivo `frontend/src/services/api.js` centraliza a baseURL da API em `http://localhost:3000`.
+
+A tela `frontend/src/pages/Home/index.jsx`:
+
+- busca usuarios com `GET /users`
+- cria usuario com `POST /user`
+- atualiza usuario com `PUT /user`
+- remove usuario com `DELETE /user`
+
+## Como testar
+
+### Backend
+
+Health check:
 
 ```bash
 curl http://localhost:3000/
 ```
 
-### Criar usuario
+Criar usuario:
 
 ```bash
 curl -X POST http://localhost:3000/user \
-	-H "Content-Type: application/json" \
-	-d '{"name":"Ana","email":"ana@email.com"}'
+  -H "Content-Type: application/json" \
+  -d '{"name":"Ana","email":"ana@email.com"}'
 ```
 
-### Listar usuarios
+Listar usuarios:
 
 ```bash
 curl http://localhost:3000/users
 ```
 
-## Secao frontend
+### Frontend
 
-Status atual:
+Com o backend e o frontend rodando, abra a aplicacao no navegador e use o formulario para cadastrar, editar e excluir usuarios.
 
-- A pasta `frontend/` existe, mas ainda esta vazia.
-- O backend ja esta pronto para ser consumido por frontend via HTTP (CORS habilitado).
+## Fluxo recomendado de desenvolvimento
 
-### Como iniciar o frontend do zero (opcao recomendada)
-
-No diretorio raiz do projeto:
-
-```bash
-npm create vite@latest frontend -- --template vanilla
-cd frontend
-npm install
-npm run dev
-```
-
-Depois, no frontend, faca chamadas para:
-
-- `POST http://localhost:3000/user`
-- `GET http://localhost:3000/users`
-
-Observacao: para desenvolvimento local, rode backend e frontend em terminais separados.
-
-## Fluxo de desenvolvimento recomendado
-
-1. Suba MongoDB (local ou Atlas)
-2. Configure `DATABASE_URL` no `.env`
-3. Rode `npx prisma generate`
-4. Rode backend com `node --watch app.js`
-5. Rode frontend com `npm run dev` (quando implementado)
-6. Opcional: abra o Prisma Studio com `npx prisma studio`
+1. Inicie o MongoDB
+2. Configure `backend/.env`
+3. Rode `npx prisma generate` dentro de `backend`
+4. Suba o backend com `node --watch app.js`
+5. Suba o frontend com `npm run dev`
+6. Use `npx prisma studio` para inspecionar os dados
 
 ## Problemas comuns
 
-### Erro de Prisma Client nao encontrado
+### Prisma Client nao encontrado
 
 Rode novamente:
 
@@ -185,9 +235,9 @@ npx prisma generate
 ### Erro de conexao com banco
 
 1. Verifique `DATABASE_URL`
-2. Confirme acesso de rede no Atlas (IP whitelist), se aplicavel
-3. Confira usuario/senha e nome do banco
+2. Confirme o acesso ao MongoDB Atlas, se estiver usando Atlas
+3. Confira usuario, senha e nome do banco
 
-### Erro de email duplicado
+### Email duplicado
 
 O campo `email` do modelo `User` eh unico. Nao pode repetir o mesmo valor.
